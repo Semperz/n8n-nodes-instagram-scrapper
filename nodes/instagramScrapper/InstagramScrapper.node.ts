@@ -29,7 +29,7 @@ export class InstagramScrapper implements INodeType {
                 'Content-Type': 'application/json',
             },
 
-            body{
+            body:{
                 addParentData: false,
                 directsUrl: '',
                 enhanceUserSearchWithFacebookPage:false,
