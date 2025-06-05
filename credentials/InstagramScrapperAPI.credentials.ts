@@ -4,7 +4,7 @@ import {
     INodeProperties,
 } from 'n8n-workflow';
 
-export class InstagramScrapperApi implements ICredentialType {
+export class InstagramScrapperAPI implements ICredentialType {
     name = 'InstagramScrapperAPI';
     displayName = 'Instagram Scrapper API';
     documentationUrl = 'https://docs.n8n.io/integrations/creating-nodes/build/declarative-style-node/';
@@ -16,7 +16,7 @@ export class InstagramScrapperApi implements ICredentialType {
             default: '',
         },
     ];
-    authenticate = {
+    authenticate: IAuthenticateGeneric = {
         type: 'generic',
         properties: {
             headers: {
