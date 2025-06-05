@@ -1,4 +1,4 @@
-import { INodeType, INodeTypeDescription } from 'n8n-workflow';
+import { INodeType, INodeTypeDescription, NodeConnectionType } from 'n8n-workflow';
 
 export class InstagramScrapper implements INodeType {
 	description: INodeTypeDescription = {
@@ -13,8 +13,8 @@ export class InstagramScrapper implements INodeType {
             name: 'Instagram Scrapper',
             color: '#E1306C',
         },
-        inputs: ['main'],
-        outputs: ['main'],
+        inputs: [NodeConnectionType.Main],
+        outputs: [NodeConnectionType.Main],
         credentials: [
             {
                 name: 'InstagramScrapperAPI',
@@ -86,7 +86,7 @@ export class InstagramScrapper implements INodeType {
             type: 'dateTime',
             required: false,
             default: '',
-            palceholder: 'YYYY-MM-DD',
+            placeholder: 'YYYY-MM-DD',
             description: 'Filter to only include posts newer than this date.',
             },
             
