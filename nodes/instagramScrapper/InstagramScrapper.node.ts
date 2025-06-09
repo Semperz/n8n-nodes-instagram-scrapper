@@ -128,7 +128,7 @@ export class InstagramScrapper implements INodeType {
                 json: true,
             };
 
-            const responseData = await this.helpers.request!(options);
+            const responseData = await this.helpers.requestWithAuthentication.call(this, "InstagramScrapperAPI", options);
             returnData.push(responseData);
         }
 
