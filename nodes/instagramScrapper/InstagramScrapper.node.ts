@@ -122,7 +122,7 @@ export class InstagramScrapper implements INodeType {
             };
 
             const options = {
-                method: 'POST',
+                method: 'POST' as const,
                 url: 'https://api.apify.com/v2/acts/apify~instagram-scraper/run-sync-get-dataset-items',
                 body,
                 json: true,
