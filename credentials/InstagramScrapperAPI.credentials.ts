@@ -20,7 +20,7 @@ export class InstagramScrapperAPI implements ICredentialType {
         type: 'generic',
         properties: {
             qs: {
-                'token': 'Bearer {{$credentials.apiKey}}'
+                'token': '={{$credentials.apiKey}}'
             }
         },
     } as IAuthenticateGeneric;
