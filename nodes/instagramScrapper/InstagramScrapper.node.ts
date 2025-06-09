@@ -35,7 +35,6 @@ export class InstagramScrapper implements INodeType {
                 enhanceUserSearchWithFacebookPage:false,
                 isUserReelFeedURL: false,
                 isUserTaggedFeedURL: false,
-                onlyPostsNewerThan: '',
                 resultsLimit: 10,
                 resultsType: 'posts',
                 searchLimit: 1,
@@ -43,7 +42,7 @@ export class InstagramScrapper implements INodeType {
             }
         },
 		properties: [
-            // Aditional properties for the node
+            // Required properties for the Instagram Scrapper node
             {
                 displayName: 'Instagram Account Name',
                 name: 'directsUrl',
@@ -81,15 +80,23 @@ export class InstagramScrapper implements INodeType {
             description: 'Type of operation to perform.',
             },
             {
-            displayName: 'Only Posts Newer Than',
-            name: 'onlyPostsNewerThan',
-            type: 'dateTime',
-            required: false,
-            default: '',
-            placeholder: 'YYYY-MM-DD',
-            description: 'Filter to only include posts newer than this date.',
-            },
-            
+                displayName: 'Additional fields',
+                name: 'additionalFields',
+                type: 'collection',
+                default: {},
+                placeholder: 'Add Field',
+                options: [
+                    {
+                        displayName: 'Only Posts Newer Than',
+                        name: 'onlyPostsNewerThan',
+                        type: 'string',
+                        required: false,
+                        default: '',
+                        placeholder: 'YYYY-MM-DD or n (days|weeks|months|years)',
+                        description: 'Filter to only include posts newer than this date (e.g., 2024-06-01 or 7 (days|weeks|months|years)).',
+                    }
+                ]
+            }
 		]
 	};
 }
