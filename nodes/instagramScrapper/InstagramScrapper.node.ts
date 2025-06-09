@@ -105,21 +105,25 @@ export class InstagramScrapper implements INodeType {
 
         for (let i = 0; i < items.length; i++) {
             const accountName = this.getNodeParameter('accountName', i) as string;
-            // Ensure the directsUrl is always in the format: "https://www.instagram.com/<instagram-account-name>/"
-            const directsUrl = `https://www.instagram.com/${accountName}/`;
+            const directUrls = [`https://www.instagram.com/${accountName}/`];
 
-            const body = {
-                ...this.getNodeParameter('additionalFields', i, {}),
-                directsUrl,
-                resultsLimit: this.getNodeParameter('resultsLimit', i),
-                resultsType: this.getNodeParameter('resultsType', i),
+            const additionalFields = this.getNodeParameter('additionalFields', i, {}) as { onlyPostsNewerThan?: string };
+
+            const body: Record<string, any> = {
                 addParentData: false,
+                directUrls,
                 enhanceUserSearchWithFacebookPage: false,
                 isUserReelFeedURL: false,
                 isUserTaggedFeedURL: false,
+                resultsLimit: this.getNodeParameter('resultsLimit', i),
+                resultsType: this.getNodeParameter('resultsType', i),
                 searchLimit: 1,
-                searchType: 'hashtag'
+                searchType: 'hashtag',
             };
+
+            if (additionalFields.onlyPostsNewerThan) {
+                body.onlyPostsNewerThan = additionalFields.onlyPostsNewerThan;
+            }
 
             const options = {
                 method: 'POST' as const,
