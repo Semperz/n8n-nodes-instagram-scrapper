@@ -1,7 +1,7 @@
-import { INodeType, INodeTypeDescription, NodeConnectionType } from 'n8n-workflow';
+import { INodeType, INodeTypeDescription, NodeConnectionType, IExecuteFunctions } from 'n8n-workflow';
 
 export class InstagramScrapper implements INodeType {
-	description: INodeTypeDescription = {
+    description: INodeTypeDescription = {
         displayName: 'Instagram Scrapper',
         name: 'InstagramScrapper',
         icon: 'file:instagramScrapper.svg',
@@ -28,11 +28,10 @@ export class InstagramScrapper implements INodeType {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-
-            body:{
+            body: {
                 addParentData: false,
-                directsUrl: '',
-                enhanceUserSearchWithFacebookPage:false,
+                directsUrl: '', // Will be set dynamically
+                enhanceUserSearchWithFacebookPage: false,
                 isUserReelFeedURL: false,
                 isUserTaggedFeedURL: false,
                 resultsLimit: 10,
@@ -41,16 +40,15 @@ export class InstagramScrapper implements INodeType {
                 searchType: 'hashtag'
             }
         },
-		properties: [
-            // Required properties for the Instagram Scrapper node
+        properties: [
             {
                 displayName: 'Instagram Account Name',
-                name: 'directsUrl',
+                name: 'accountName',
                 type: 'string',
                 required: true,
                 default: '',
                 placeholder: 'Username',
-                description: 'The Instagram profile name to scrape.',
+                description: 'The Instagram profile name to scrape. Only enter the username, e.g. "cristiano".',
             },
             {
                 displayName: 'Number of Outputs',
@@ -65,19 +63,19 @@ export class InstagramScrapper implements INodeType {
                 description: 'Maximum number of results to return.',
             },
             {
-            displayName: 'Operation',
-            name: 'resultsType',
-            type: 'options',
-            required: true,
-            options: [
-                { name: 'Posts', value: 'posts' },
-                { name: 'Details', value: 'details' },
-                { name: 'Comments', value: 'comments' },
-                { name: 'Mentions', value: 'mentions' },
-                { name: 'Stories', value: 'stories' },
-            ],
-            default: 'posts',
-            description: 'Type of operation to perform.',
+                displayName: 'Operation',
+                name: 'resultsType',
+                type: 'options',
+                required: true,
+                options: [
+                    { name: 'Posts', value: 'posts' },
+                    { name: 'Details', value: 'details' },
+                    { name: 'Comments', value: 'comments' },
+                    { name: 'Mentions', value: 'mentions' },
+                    { name: 'Stories', value: 'stories' },
+                ],
+                default: 'posts',
+                description: 'Type of operation to perform.',
             },
             {
                 displayName: 'Additional fields',
@@ -97,6 +95,47 @@ export class InstagramScrapper implements INodeType {
                     }
                 ]
             }
-		]
-	};
+        ]
+    };
+
+    // Add this method to transform accountName to directsUrl before making the request
+    async execute(this: IExecuteFunctions) {
+        const items = this.getInputData();
+        const returnData = [];
+
+        for (let i = 0; i < items.length; i++) {
+            const accountName = this.getNodeParameter('accountName', i) as string;
+            // Ensure the directsUrl is always in the format: "https://www.instagram.com/<instagram-account-name>/"
+            const directsUrl = `https://www.instagram.com/${accountName}/`;
+
+            const body = {
+                ...this.getNodeParameter('additionalFields', i, {}),
+                directsUrl,
+                resultsLimit: this.getNodeParameter('resultsLimit', i),
+                resultsType: this.getNodeParameter('resultsType', i),
+                addParentData: false,
+                enhanceUserSearchWithFacebookPage: false,
+                isUserReelFeedURL: false,
+                isUserTaggedFeedURL: false,
+                searchLimit: 1,
+                searchType: 'hashtag'
+            };
+
+            const options = {
+                method: 'POST',
+                url: 'https://api.apify.com/v2/acts/apify~instagram-scraper/run-sync-get-dataset-items',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body,
+                json: true,
+            };
+
+            const responseData = await this.helpers.request!(options);
+            returnData.push(responseData);
+        }
+
+        return [this.helpers.returnJsonArray(returnData)];
+    }
 }
